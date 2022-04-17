@@ -1,9 +1,10 @@
 # Fast R-CNN
 
-> [Fast R-CNN](https://arxiv.org/abs/1504.08083)
+## Introduction
 
 <!-- [ALGORITHM] -->
 
+<<<<<<< HEAD
 ## Abstract
 
 This paper proposes a Fast Region-based Convolutional Network method (Fast R-CNN) for object detection. Fast R-CNN builds on previous work to efficiently classify object proposals using deep convolutional networks. Compared to previous work, Fast R-CNN employs several innovations to improve training and testing speed while also increasing detection accuracy. Fast R-CNN trains the very deep VGG16 network 9x faster than R-CNN, is 213x faster at test-time, and achieves a higher mAP on PASCAL VOC 2012. Compared to SPPnet, Fast R-CNN trains VGG16 3x faster, tests 10x faster, and is more accurate.
@@ -63,6 +64,8 @@ Finally, users can start training the Fast R-CNN.
 
 ## Citation
 
+=======
+>>>>>>> f078d5c5 (add modified tools)
 ```latex
 @inproceedings{girshick2015fast,
   title={Fast r-cnn},
@@ -71,3 +74,5 @@ Finally, users can start training the Fast R-CNN.
   year={2015}
 }
 ```
+
+## Results and models

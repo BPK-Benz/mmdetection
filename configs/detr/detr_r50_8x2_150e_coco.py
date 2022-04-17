@@ -68,8 +68,13 @@ model = dict(
             reg_cost=dict(type='BBoxL1Cost', weight=5.0, box_format='xywh'),
             iou_cost=dict(type='IoUCost', iou_mode='giou', weight=2.0))),
     test_cfg=dict(max_per_img=100))
+
+
+img_scale = (int(1360/4*3), int(1024/4*3))
+# img_scale = (int(1360/2), int(1024/2))
 img_norm_cfg = dict(
-    mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
+    mean=[25.526, 0.386, 52.850], std=[53.347, 9.402, 53.172], to_rgb=True)
+
 # train_pipeline, NOTE the img_scale and the Pad's size_divisor is different
 # from the default setting in mmdet.
 train_pipeline = [
@@ -131,12 +136,34 @@ test_pipeline = [
             dict(type='Collect', keys=['img'])
         ])
 ]
+
+base = "/workspace/NAS/Benz_Cell/cellLabel-main/"
 data = dict(
-    samples_per_gpu=2,
-    workers_per_gpu=2,
-    train=dict(pipeline=train_pipeline),
-    val=dict(pipeline=test_pipeline),
-    test=dict(pipeline=test_pipeline))
+    samples_per_gpu=1,
+    workers_per_gpu=1,
+    train=dict(
+        type=dataset_type,
+        ann_file= base+'Coco_File/TrainCellNuc.json',
+        img_prefix= base,
+        classes=classes,
+        pipeline=train_pipeline,
+    ),
+    val=dict(
+        type=dataset_type,
+        ann_file= base+'Coco_File/TestCellNuc.json',
+        img_prefix= base,
+        classes=classes,
+        pipeline=test_pipeline,
+    ),
+    test=dict(
+        type=dataset_type,
+        ann_file= base+'Coco_File/TestCellNuc.json',
+        img_prefix= base,
+        classes=classes,
+        pipeline=test_pipeline,
+    )
+)
+
 # optimizer
 optimizer = dict(
     type='AdamW',
@@ -147,4 +174,4 @@ optimizer = dict(
 optimizer_config = dict(grad_clip=dict(max_norm=0.1, norm_type=2))
 # learning policy
 lr_config = dict(policy='step', step=[100])
-runner = dict(type='EpochBasedRunner', max_epochs=150)
+runner = dict(type='EpochBasedRunner', max_epochs=30)

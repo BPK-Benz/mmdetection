@@ -1,16 +1,19 @@
-# Guided Anchoring
+# Region Proposal by Guided Anchoring
 
-> [Region Proposal by Guided Anchoring](https://arxiv.org/abs/1901.03278)
+## Introduction
 
 <!-- [ALGORITHM] -->
 
-## Abstract
+We provide config files to reproduce the results in the CVPR 2019 paper for [Region Proposal by Guided Anchoring](https://arxiv.org/abs/1901.03278).
 
-Region anchors are the cornerstone of modern object detection techniques. State-of-the-art detectors mostly rely on a dense anchoring scheme, where anchors are sampled uniformly over the spatial domain with a predefined set of scales and aspect ratios. In this paper, we revisit this foundational stage. Our study shows that it can be done much more effectively and efficiently. Specifically, we present an alternative scheme, named Guided Anchoring, which leverages semantic features to guide the anchoring. The proposed method jointly predicts the locations where the center of objects of interest are likely to exist as well as the scales and aspect ratios at different locations. On top of predicted anchor shapes, we mitigate the feature inconsistency with a feature adaption module. We also study the use of high-quality proposals to improve detection performance. The anchoring scheme can be seamlessly integrated into proposal methods and detectors. With Guided Anchoring, we achieve 9.1% higher recall on MS COCO with 90% fewer anchors than the RPN baseline. We also adopt Guided Anchoring in Fast R-CNN, Faster R-CNN and RetinaNet, respectively improving the detection mAP by 2.2%, 2.7% and 1.2%.
-
-<div align=center>
-<img src="https://user-images.githubusercontent.com/40661020/143891529-4c178948-c3fd-4543-ae6e-bb2aa3c8147e.png"/>
-</div>
+```latex
+@inproceedings{wang2019region,
+    title={Region Proposal by Guided Anchoring},
+    author={Jiaqi Wang and Kai Chen and Shuo Yang and Chen Change Loy and Dahua Lin},
+    booktitle={IEEE Conference on Computer Vision and Pattern Recognition},
+    year={2019}
+}
+```
 
 ## Results and Models
 
@@ -38,6 +41,7 @@ The results on COCO 2017 val is shown in the below table. (results on test-dev a
 
 - Performance on COCO test-dev benchmark are shown as follows.
 
+<<<<<<< HEAD
 |     Method     | Backbone  | Style | Lr schd | Aug Train | Score thr | AP  | AP_50 | AP_75 | AP_small | AP_medium | AP_large | Download |
 | :------------: | :-------: | :---: | :-----: | :-------: | :-------: | :-: | :---: | :---: | :------: | :-------: | :------: | :------: |
 | GA-Faster RCNN | R-101-FPN | caffe |   1x    |     F     |   0.05    |     |       |       |          |           |          |          |
@@ -57,3 +61,11 @@ We provide config files to reproduce the results in the CVPR 2019 paper for [Reg
     year={2019}
 }
 ```
+=======
+|     Method     | Backbone  | Style | Lr schd | Aug Train | Score thr |  AP   | AP_50 | AP_75 | AP_small | AP_medium | AP_large | Download |
+| :------------: | :-------: | :---: | :-----: | :-------: | :-------: | :---: | :---: | :---: | :------: | :-------: | :------: | :------: |
+| GA-Faster RCNN | R-101-FPN | caffe |   1x    |     F     |   0.05    |       |       |       |          |           |          |          |
+| GA-Faster RCNN | R-101-FPN | caffe |   1x    |     F     |   0.001   |       |       |       |          |           |          |          |
+|  GA-RetinaNet  | R-101-FPN | caffe |   1x    |     F     |   0.05    |       |       |       |          |           |          |          |
+|  GA-RetinaNet  | R-101-FPN | caffe |   2x    |     T     |   0.05    |       |       |       |          |           |          |          |
+>>>>>>> f078d5c5 (add modified tools)

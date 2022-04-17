@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # RegNet
 
 > [Designing Network Design Spaces](https://arxiv.org/abs/2003.13678)
@@ -11,12 +12,28 @@ In this work, we present a new network design paradigm. Our goal is to help adva
 <div align=center>
 <img src="https://user-images.githubusercontent.com/40661020/143971942-da50f719-61e9-43bd-9468-0dbfbe80284e.png"/>
 </div>
+=======
+# Designing Network Design Spaces
+>>>>>>> f078d5c5 (add modified tools)
 
 ## Introduction
+
+[BACKBONE]
 
 We implement RegNetX and RegNetY models in detection systems and provide their first results on Mask R-CNN, Faster R-CNN and RetinaNet.
 
 The pre-trained models are converted from [model zoo of pycls](https://github.com/facebookresearch/pycls/blob/master/MODEL_ZOO.md).
+
+```latex
+@article{radosavovic2020designing,
+    title={Designing Network Design Spaces},
+    author={Ilija Radosavovic and Raj Prateek Kosaraju and Ross Girshick and Kaiming He and Piotr Dollár},
+    year={2020},
+    eprint={2003.13678},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
+}
+```
 
 ## Usage
 
@@ -47,7 +64,7 @@ For other pre-trained models or self-implemented regnet models, the users are re
 
 **Note**: Although Fig. 15 & 16 also provide `w0`, `wa`, `wm`, `group_w`, and `bot_mul` for `arch`, they are quantized thus inaccurate, using them sometimes produces different backbone that does not match the key in the pre-trained model.
 
-## Results and Models
+## Results
 
 ### Mask R-CNN
 
@@ -107,16 +124,3 @@ We also train some models with longer schedules and multi-scale training. The us
 
 1. The models are trained using a different weight decay, i.e., `weight_decay=5e-5` according to the setting in ImageNet training. This brings improvement of at least 0.7 AP absolute but does not improve the model using ResNet-50.
 2. RetinaNets using RegNets are trained with learning rate 0.02 with gradient clip. We find that using learning rate 0.02 could improve the results by at least 0.7 AP absolute and gradient clip is necessary to stabilize the training. However, this does not improve the performance of ResNet-50-FPN RetinaNet.
-
-## Citation
-
-```latex
-@article{radosavovic2020designing,
-    title={Designing Network Design Spaces},
-    author={Ilija Radosavovic and Raj Prateek Kosaraju and Ross Girshick and Kaiming He and Piotr Dollár},
-    year={2020},
-    eprint={2003.13678},
-    archivePrefix={arXiv},
-    primaryClass={cs.CV}
-}
-```
