@@ -3,7 +3,8 @@ _base_ = './mask_rcnn_r50_fpn_2x_coco.py'
 # 1. dataset settings
 # Modify dataset related settings
 dataset_type = 'CocoDataset'
-classes = ('Infected_cells','Uninfected_cells','Undefined_cells', )
+# classes = ('Infected_cells','Uninfected_cells','Undefined_cells', )
+classes = ('Infected_cells', )
 
 img_scale = (int(1360/4*3), int(1024/4*3))
 # img_scale = (int(1360/2), int(1024/2))
@@ -14,13 +15,37 @@ img_norm_cfg = dict(
 
 # Image augmentation by Albumentations
 albu_train_transforms = [
-    dict(
-        type='OneOf',
-        transforms=[
-            dict(type='Blur', blur_limit=[3,5], p=1.0),
-            dict(type='MedianBlur', blur_limit=[3,5], p=1.0)
-        ],
-        p=0.1),
+
+    #  dict(
+    #     type='ShiftScaleRotate',
+    #     shift_limit=0.0625,
+    #     scale_limit=0.0,
+    #     rotate_limit=0,
+    #     interpolation=1,
+    #     p=0.5),
+    # dict(
+    #     type='RandomBrightnessContrast',
+    #     brightness_limit=[0.2, 0.3],
+    #     # contrast_limit=[0.1, 0.3],
+    #     p=0.2),
+    # dict(
+    #     type='OneOf',
+    #     transforms=[
+    #         dict(
+    #             type='HueSaturationValue',
+    #             hue_shift_limit=0, # color
+    #             sat_shift_limit=50, # max (rgb channel) - min (rgb channel) 
+    #             val_shift_limit=40, # brightness
+    #             p=1.0)
+    #     ],
+    #     p=0.1),
+    # dict(
+    #     type='OneOf',
+    #     transforms=[
+    #         dict(type='Blur', blur_limit=[3,5], p=1.0),
+    #         dict(type='MedianBlur', blur_limit=[3,5], p=1.0)
+    #     ],
+    #     p=0.5),
 ]
 
 
@@ -30,28 +55,30 @@ train_pipeline = [
     dict(type='Resize', img_scale=img_scale, keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5, direction=['horizontal','vertical'] ),
     dict(type='Pad', size_divisor=32),
-    dict(
-    type='PhotoMetricDistortion',
-    brightness_delta=2,
-    contrast_range=(0.5, 0.9),
-    saturation_range=(0.5, 0.9)),
+    # dict(
+    # type='PhotoMetricDistortion',
+    # brightness_delta=1,
+    # contrast_range=(0.1, 0.5),
+    # saturation_range=(0.5, 0.7)
+    # ),
+    
 
-    dict(
-    type='Albu',
-    transforms=albu_train_transforms,
-    bbox_params=dict(
-        type='BboxParams',
-        format='pascal_voc',
-        label_fields=['gt_labels'],
-        min_visibility=0.0,
-        filter_lost_elements=True),
-    keymap={
-        'img': 'image',
-        'gt_masks': 'masks',
-        'gt_bboxes': 'bboxes'
-    },
-    update_pad_shape=False,
-    skip_img_without_anno=True),
+    # dict(
+    # type='Albu',
+    # transforms=albu_train_transforms,
+    # bbox_params=dict(
+    #     type='BboxParams',
+    #     format='pascal_voc',
+    #     label_fields=['gt_labels'],
+    #     min_visibility=0.0,
+    #     filter_lost_elements=True),
+    # keymap={
+    #     'img': 'image',
+    #     'gt_masks': 'masks',
+    #     'gt_bboxes': 'bboxes'
+    # },
+    # update_pad_shape=False,
+    # skip_img_without_anno=True),
 
     dict(type='Normalize', **img_norm_cfg),
     dict(type='DefaultFormatBundle'),
@@ -133,7 +160,8 @@ model = dict(
             mask_thr_binary=0.5))                     
 )
 # optimizer
-optimizer = dict(type='SGD', lr=0.005, momentum=0.9, weight_decay=0.0005)
+optimizer = dict(type='SGD', lr=0.0005, momentum=0.9, weight_decay=0.0005)
+fp16 = dict(loss_scale=512.)
 
 load_from="pretrained_models/mask_rcnn_r101_fpn_2x_coco_bbox_mAP-0.408__segm_mAP-0.366_20200505_071027-14b391c7.pth"
 runner = dict(type='EpochBasedRunner', max_epochs=30)

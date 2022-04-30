@@ -117,7 +117,7 @@ model = dict(
 
     roi_head=dict(
         bbox_head=dict(num_classes=len(classes)),
-        mask_head=dict(num_classes=len(classes)) 
+        mask_head=dict(num_classes=len(classes)), 
     ),
 
     test_cfg=dict(

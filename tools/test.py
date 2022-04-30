@@ -237,6 +237,7 @@ def main():
         model = build_dp(model, cfg.device, device_ids=cfg.gpu_ids)
         outputs = single_gpu_test(model, data_loader, args.show, args.show_dir,
                                   args.show_score_thr)
+        
     else:
         model = build_ddp(
             model,
@@ -263,9 +264,10 @@ def main():
                     'rule', 'dynamic_intervals'
             ]:
                 eval_kwargs.pop(key, None)
+            print('****** Here *********')
             eval_kwargs.update(dict(metric=args.eval, **kwargs))
             metric = dataset.evaluate(outputs, **eval_kwargs)
-            print(metric)
+            print('Metric', metric)
             metric_dict = dict(config=args.config, metric=metric)
             if args.work_dir is not None and rank == 0:
                 mmcv.dump(metric_dict, json_file)

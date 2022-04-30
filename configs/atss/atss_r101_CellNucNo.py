@@ -11,11 +11,18 @@ img_norm_cfg = dict(
     mean=[25.526, 0.386, 52.850], std=[53.347, 9.402, 53.172], to_rgb=True)
 
 
+
 train_pipeline = [
-    dict(type='LoadImageFromFile'),
+
+    dict(type='LoadImageFromFile',),
     dict(type='LoadAnnotations', with_bbox=True),
     dict(type='Resize', img_scale=img_scale, keep_ratio=True),
-     dict(type='Normalize', **img_norm_cfg),
+    dict(type='RandomFlip', flip_ratio=0.5, direction=['horizontal','vertical'] ),
+    dict(type='Pad', size_divisor=32),
+
+
+
+    dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
     dict(type='DefaultFormatBundle'),
     dict(
@@ -47,26 +54,27 @@ data = dict(
     workers_per_gpu=1,
     train=dict(
         type=dataset_type,
-        ann_file= base+'Coco_File/TrainCellNuc.json',
+        ann_file= base+'Coco_File/Cell_TrainNuc_April.json',
         img_prefix= base,
         classes=classes,
         pipeline=train_pipeline,
     ),
     val=dict(
         type=dataset_type,
-        ann_file= base+'Coco_File/TestCellNuc.json',
+        ann_file= base+'Coco_File/Cell_TestNuc_April.json',
         img_prefix= base,
         classes=classes,
         pipeline=test_pipeline,
     ),
     test=dict(
         type=dataset_type,
-        ann_file= base+'Coco_File/TestCellNuc.json',
+        ann_file= base+'Coco_File/Cell_TestNuc_April.json',
         img_prefix= base,
         classes=classes,
         pipeline=test_pipeline,
     )
 )
+
 
 # optimizer
 optimizer = dict(type='SGD', lr=0.005, momentum=0.9, weight_decay=0.0005)
@@ -84,6 +92,7 @@ model = dict(
     test_cfg=dict(
         max_per_img=300)
 )
+
 
 
 load_from = 'pretrained_models/atss_r101_fpn_1x_20200825-dfcadd6f.pth'

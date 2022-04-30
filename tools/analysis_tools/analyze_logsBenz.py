@@ -6,9 +6,10 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+import pandas as pd
 
 
-def cal_train_time(log_dicts, args):
+def cal_train_time(log_dicts, args, ):
     for i, log_dict in enumerate(log_dicts):
         print(f'{"-" * 5}Analyze train time of {args.json_logs[i]}{"-" * 5}')
         all_times = []
@@ -31,7 +32,11 @@ def cal_train_time(log_dicts, args):
         print(f'time std over epochs is {std_over_epoch:.4f}')
         print(f'average iter time: {np.mean(all_times):.4f} s/iter')
         print()
-        print([args.json_logs[i][10:-25], np.sum(all_times[:31]), np.mean(all_times), std_over_epoch])
+        calTime = [[args.json_logs[i][10:-25], np.sum(all_times[:31]), np.mean(all_times), std_over_epoch]]
+        save_path = args.json_logs[i][:-25]
+        df  =pd.DataFrame(calTime, columns=['Model','Net_Time','Average_Iteration_Time','Std_Time'])
+        df.to_csv(save_path+'/TrainTime.csv')
+        # print([args.json_logs[i][10:-25], np.sum(all_times[:31]), np.mean(all_times), std_over_epoch])
 
 
 def plot_curve(log_dicts, args):

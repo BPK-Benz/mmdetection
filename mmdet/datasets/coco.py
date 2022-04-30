@@ -7,6 +7,7 @@ import os.path as osp
 import tempfile
 import warnings
 from collections import OrderedDict
+import pandas as pd
 
 import mmcv
 import numpy as np
@@ -35,15 +36,16 @@ class CocoDataset(CustomDataset):
                'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop',
                'mouse', 'remote', 'keyboard', 'cell phone', 'microwave',
                'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock',
-               'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush')
+               'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush','object')
 
-    PALETTE = [(220, 20, 60), (119, 11, 32), (0, 0, 142), (0, 0, 230),
+    # change color of each class
+    PALETTE = [(247, 230, 0), (0, 215, 10), (220, 20, 60), (0, 0, 230),
                (106, 0, 228), (0, 60, 100), (0, 80, 100), (0, 0, 70),
                (0, 0, 192), (250, 170, 30), (100, 170, 30), (220, 220, 0),
                (175, 116, 175), (250, 0, 30), (165, 42, 42), (255, 77, 255),
                (0, 226, 252), (182, 182, 255), (0, 82, 0), (120, 166, 157),
                (110, 76, 0), (174, 57, 255), (199, 100, 0), (72, 0, 118),
-               (255, 179, 240), (0, 125, 92), (209, 0, 151), (188, 208, 182),
+               (255, 179, 240),(119, 11, 32) , (209, 0, 151), (188, 208, 182),
                (0, 220, 176), (255, 99, 164), (92, 0, 73), (133, 129, 255),
                (78, 180, 255), (0, 228, 0), (174, 255, 243), (45, 89, 255),
                (134, 134, 103), (145, 148, 174), (255, 208, 186),
@@ -57,7 +59,7 @@ class CocoDataset(CustomDataset):
                (219, 142, 185), (79, 210, 114), (178, 90, 62), (65, 70, 15),
                (127, 167, 115), (59, 105, 106), (142, 108, 45), (196, 172, 0),
                (95, 54, 80), (128, 76, 255), (201, 57, 1), (246, 0, 122),
-               (191, 162, 208)]
+               (191, 162, 208),(255,255,255)]
 
     def load_annotations(self, ann_file):
         """Load annotation from COCO style annotation file.
@@ -392,7 +394,8 @@ class CocoDataset(CustomDataset):
                           classwise=False,
                           proposal_nums=(100, 300, 1000),
                           iou_thrs=None,
-                          metric_items=None):
+                          metric_items=None,
+                          save_path=''):
         """Instance segmentation and object detection evaluation in COCO
         protocol.
 
@@ -570,6 +573,9 @@ class CocoDataset(CustomDataset):
                     table_data += [result for result in results_2d]
                     table = AsciiTable(table_data)
                     print_log('\n' + table.table, logger=logger)
+                    print('Table_data', table_data)
+                    if save_path:
+                        pd.DataFrame(table_data).to_csv(save_path+'Classwise.csv')
 
                 if metric_items is None:
                     metric_items = [
@@ -597,7 +603,8 @@ class CocoDataset(CustomDataset):
                  classwise=False,
                  proposal_nums=(100, 300, 1000),
                  iou_thrs=None,
-                 metric_items=None):
+                 metric_items=None,
+                 save_path=''):
         """Evaluation in COCO protocol.
 
         Args:
@@ -642,7 +649,7 @@ class CocoDataset(CustomDataset):
         eval_results = self.evaluate_det_segm(results, result_files, coco_gt,
                                               metrics, logger, classwise,
                                               proposal_nums, iou_thrs,
-                                              metric_items)
+                                              metric_items, save_path)
 
         if tmp_dir is not None:
             tmp_dir.cleanup()

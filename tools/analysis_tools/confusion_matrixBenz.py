@@ -172,7 +172,7 @@ def plot_confusion_matrix(confusion_matrix,
                           save_dir=None,
                           show=True,
                           title='Normalized Confusion Matrix',
-                          color_theme='plasma'):
+                          color_theme='Set2'):
     """Draw confusion matrix with matplotlib.
     Args:
         confusion_matrix (ndarray): The confusion matrix.
@@ -184,10 +184,13 @@ def plot_confusion_matrix(confusion_matrix,
         color_theme (str): Theme of the matrix color map. Default: `plasma`.
     """
     # normalize the confusion matrix
+    print('\n',confusion_matrix)
     per_label_sums = confusion_matrix.sum(axis=1)[:, np.newaxis]
+    print(per_label_sums)
     confusion_matrix = \
         confusion_matrix.astype(np.float32) / per_label_sums * 100
-
+    confusion_matrix = np.nan_to_num(confusion_matrix)
+    
     num_classes = len(labels)
     fig, ax = plt.subplots(
         # figsize=(0.5 * num_classes, 0.5 * num_classes * 0.8), dpi=180)

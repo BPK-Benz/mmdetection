@@ -49,21 +49,21 @@ data = dict(
     workers_per_gpu=1,
     train=dict(
         type=dataset_type,
-        ann_file= base+'Coco_File/TrainCellNuc.json',
+        ann_file= base+'Coco_File/Cell_TrainNuc_April.json',
         img_prefix= base,
         classes=classes,
         pipeline=train_pipeline,
     ),
     val=dict(
         type=dataset_type,
-        ann_file= base+'Coco_File/TestCellNuc.json',
+        ann_file= base+'Coco_File/Cell_TestNuc_April.json',
         img_prefix= base,
         classes=classes,
         pipeline=test_pipeline,
     ),
     test=dict(
         type=dataset_type,
-        ann_file= base+'Coco_File/TestCellNuc.json',
+        ann_file= base+'Coco_File/Cell_TestNuc_April.json',
         img_prefix= base,
         classes=classes,
         pipeline=test_pipeline,
@@ -82,7 +82,7 @@ model = dict(
         rpn=dict(
             nms_pre=1000,
             max_per_img=1000,
-            nms=dict(type='nms', iou_threshold=0.7),
+            nms=dict(type='nms', iou_threshold=0.5),
             min_bbox_size=0),
         rcnn=dict(
             score_thr=0.05,

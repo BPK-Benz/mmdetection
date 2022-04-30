@@ -3,7 +3,7 @@ _base_ = './atss_r50_fpn_1x_coco.py'
 # 1. dataset settings
 # Modify dataset related settings
 dataset_type = 'CocoDataset'
-classes = ('Infected_cells','Uninfected_cells','Undefined_cells', )
+classes = ('Infected_cells','Uninfected_cells','Divided_cells', 'Border_cells' )
 
 img_scale = (int(1360/4*3), int(1024/4*3))
 # img_scale = (int(1360/2), int(1024/2))
@@ -47,21 +47,21 @@ data = dict(
     workers_per_gpu=1,
     train=dict(
         type=dataset_type,
-        ann_file= base+'Coco_File/InfectTotal_TrainCell.json',
+        ann_file= base+'Coco_File/InfectTotal_TrainNuc_April.json',
         img_prefix= base,
         classes=classes,
         pipeline=train_pipeline,
     ),
     val=dict(
         type=dataset_type,
-        ann_file= base+'Coco_File/InfectTotal_TestCell.json',
+        ann_file= base+'Coco_File/InfectTotal_TestNuc_April.json',
         img_prefix= base,
         classes=classes,
         pipeline=test_pipeline,
     ),
     test=dict(
         type=dataset_type,
-        ann_file= base+'Coco_File/InfectTotal_TestCell.json',
+        ann_file= base+'Coco_File/InfectTotal_TestNuc_April.json',
         img_prefix= base,
         classes=classes,
         pipeline=test_pipeline,

@@ -18,37 +18,48 @@ img_norm_cfg = dict(
 # Image augmentation by Albumentations
 albu_train_transforms = [
     dict(
+        type='ShiftScaleRotate',
+        shift_limit=0.0625,
+        scale_limit=0,
+        rotate_limit=0,
+        interpolation=1,
+        p=0.5),
+    dict(
+        type='RandomBrightnessContrast',
+        brightness_limit=[0.1, 0.3],
+        contrast_limit=[0.1, 0.3],
+        p=0.5),
+    # dict(type='JpegCompression', quality_lower=85, quality_upper=95, p=0.2),
+    dict(
         type='OneOf',
         transforms=[
-            dict(type='Blur', blur_limit=[3,5], p=1.0),
-            dict(type='MedianBlur', blur_limit=[3,5], p=1.0)
+            dict(type='Blur', blur_limit=(3,5), p=0.5),
+            dict(type='MedianBlur', blur_limit=(3,5), p=0.5),
+            dict(type='MotionBlur', blur_limit=(3,5), p=0.5),
         ],
-        p=0.1),
+        p=0.5),
 ]
 
 
 train_pipeline = [
-    dict(type='LoadImageFromFile', to_float32=True),
+
+    dict(type='LoadImageFromFile', ),
     dict(type='LoadAnnotations', with_bbox=True),
     dict(type='Resize', img_scale=img_scale, keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5, direction=['horizontal','vertical'] ),
     dict(type='Pad', size_divisor=32),
+    
+    
     dict(
-    type='PhotoMetricDistortion',
-    brightness_delta=2,
-    contrast_range=(0.5, 0.9),
-    saturation_range=(0.5, 0.9)),
-
-    dict(
-    type='Albu',
-    transforms=albu_train_transforms,
-    bbox_params=dict(
-        type='BboxParams',
-        format='pascal_voc',
-        label_fields=['gt_labels'],
-        min_visibility=0.0,
-        filter_lost_elements=True),
-    keymap={
+        type='Albu',
+        transforms=albu_train_transforms,
+        bbox_params=dict(
+            type='BboxParams',
+            format='pascal_voc',
+            label_fields=['gt_labels'],
+            min_visibility=0.0,
+            filter_lost_elements=True),
+        keymap={
         'img': 'image',
         'gt_masks': 'masks',
         'gt_bboxes': 'bboxes'
@@ -56,16 +67,14 @@ train_pipeline = [
     update_pad_shape=False,
     skip_img_without_anno=True),
 
-
     dict(type='Normalize', **img_norm_cfg),
+    dict(type='Pad', size_divisor=32),
     dict(type='DefaultFormatBundle'),
-    # dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels']),
-
     dict(
         type='Collect',
         keys=['img', 'gt_bboxes', 'gt_labels'],
         meta_keys=('filename', 'ori_shape', 'img_shape', 'img_norm_cfg',
-                   'pad_shape', 'scale_factor'))
+                   'pad_shape', 'scale_factor')),
 
 ]
 test_pipeline = [
@@ -76,7 +85,7 @@ test_pipeline = [
         flip=False,
         transforms=[
             dict(type='Resize', keep_ratio=True),
-            dict(type='RandomFlip'),
+            dict(type='RandomFlip', flip_ratio=0.5, direction=['horizontal','vertical'] ),
             dict(type='Normalize', **img_norm_cfg),
             dict(type='Pad', size_divisor=32),
             dict(type='ImageToTensor', keys=['img']),
@@ -84,27 +93,28 @@ test_pipeline = [
         ])
 ]
 
+
 base = "/workspace/NAS/Benz_Cell/cellLabel-main/"
 data = dict(
     samples_per_gpu=1,
     workers_per_gpu=1,
     train=dict(
         type=dataset_type,
-        ann_file= base+'Coco_File/TrainCellNuc.json',
+        ann_file= base+'Coco_File/Cell_TrainNuc_April.json',
         img_prefix= base,
         classes=classes,
         pipeline=train_pipeline,
     ),
     val=dict(
         type=dataset_type,
-        ann_file= base+'Coco_File/TestCellNuc.json',
+        ann_file= base+'Coco_File/Cell_TestNuc_April.json',
         img_prefix= base,
         classes=classes,
         pipeline=test_pipeline,
     ),
     test=dict(
         type=dataset_type,
-        ann_file= base+'Coco_File/TestCellNuc.json',
+        ann_file= base+'Coco_File/Cell_TestNuc_April.json',
         img_prefix= base,
         classes=classes,
         pipeline=test_pipeline,
@@ -122,7 +132,7 @@ model = dict(
     backbone=dict(
         depth=101,
         init_cfg=dict(type='Pretrained',
-                      checkpoint='torchvision://resnet101')),
+                      checkpoint='torchvision://resnet50')),
     roi_head=dict(
         bbox_head=dict(num_classes=len(classes))
         ),
@@ -130,7 +140,7 @@ model = dict(
     rpn=dict(
         nms_pre=1000,
         max_per_img=1000,
-        nms=dict(type='nms', iou_threshold=0.7),
+        nms=dict(type='nms', iou_threshold=0.5),
         min_bbox_size=0),
     rcnn=dict(
         score_thr=0.05,

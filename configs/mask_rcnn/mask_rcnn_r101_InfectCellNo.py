@@ -1,4 +1,4 @@
-_base_ = './atss_r50_fpn_1x_coco.py'
+_base_ = './mask_rcnn_r50_fpn_2x_coco.py'
 
 # 1. dataset settings
 # Modify dataset related settings
@@ -13,29 +13,16 @@ img_norm_cfg = dict(
 
 
 train_pipeline = [
-
-    dict(type='LoadImageFromFile', to_float32=True),
-    dict(type='LoadAnnotations', with_bbox=True),
-    dict(type='Resize', img_scale=img_scale, keep_ratio=True),
-    dict(type='RandomFlip', flip_ratio=0.5, direction=['horizontal','vertical'] ),
-    dict(type='Pad', size_divisor=32),
-    dict(
-    type='PhotoMetricDistortion',
-    brightness_delta=2,
-    contrast_range=(0.5, 0.9),
-    saturation_range=(0.5, 0.9)),
-
-
+    dict(type='LoadImageFromFile'),
+    dict(type='LoadAnnotations', with_bbox=True, with_mask=True),
+    dict(type='Resize', img_scale=(1333, 800), keep_ratio=True),
+    dict(type='RandomFlip', flip_ratio=0.5),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
     dict(type='DefaultFormatBundle'),
-    dict(
-        type='Collect',
-        keys=['img', 'gt_bboxes', 'gt_labels'],
-        meta_keys=('filename', 'ori_shape', 'img_shape', 'img_norm_cfg',
-                   'pad_shape', 'scale_factor')),
-
+    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels', 'gt_masks']),
 ]
+
 test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(
@@ -79,27 +66,35 @@ data = dict(
     )
 )
 
-# optimizer
-optimizer = dict(type='SGD', lr=0.005, momentum=0.9, weight_decay=0.0005)
-
 # 2. model settings
 # We also need to change the num_classes in head to match the dataset's annotation
 model = dict(
     backbone=dict(
         depth=101,
         init_cfg=dict(type='Pretrained',
-                      checkpoint='torchvision://resnet101')),
-    bbox_head=dict(
-        type='ATSSHead',
-        num_classes=len(classes)),
+                      checkpoint='torchvision://resnet101'
+                      )
+    ),
+
+    roi_head=dict(
+        bbox_head=dict(num_classes=len(classes)),
+        mask_head=dict(num_classes=len(classes)) 
+    ),
+
     test_cfg=dict(
-        max_per_img=300)
+        rpn=dict(
+            nms_pre=1000,
+            max_per_img=1000,
+            nms=dict(type='nms', iou_threshold=0.7),
+            min_bbox_size=0),
+        rcnn=dict(
+            score_thr=0.05,
+            nms=dict(type='nms', iou_threshold=0.5),
+            max_per_img=300,
+            mask_thr_binary=0.5))                     
 )
+# optimizer
+optimizer = dict(type='SGD', lr=0.005, momentum=0.9, weight_decay=0.0005)
 
-
-
-load_from = 'pretrained_models/atss_r101_fpn_1x_20200825-dfcadd6f.pth'
-# resume_from = 'work_dirs/faster_rcnn_r50_fpn_mdconv_c3-c5_1x_coco_cell/latest.pth'
-
-
-runner = dict(type='EpochBasedRunner', max_epochs=30)
+load_from="pretrained_models/mask_rcnn_r101_fpn_2x_coco_bbox_mAP-0.408__segm_mAP-0.366_20200505_071027-14b391c7.pth"
+runner = dict(type='EpochBasedRunner', max_epochs=3)
