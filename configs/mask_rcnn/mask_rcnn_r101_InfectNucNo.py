@@ -3,17 +3,13 @@ _base_ = './mask_rcnn_r50_fpn_2x_coco.py'
 # 1. dataset settings
 # Modify dataset related settings
 dataset_type = 'CocoDataset'
-# classes = ('Infected_cells','Uninfected_cells','Undefined_cells', )
 classes = ('Infected_cells','Uninfected_cells','Divided_cells','Border_cells', )
-
 
 
 img_scale = (int(1360/4*3), int(1024/4*3))
 # img_scale = (int(1360/2), int(1024/2))
 img_norm_cfg = dict(
     mean=[25.526, 0.386, 52.850], std=[53.347, 9.402, 53.172], to_rgb=True)
-
-
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),

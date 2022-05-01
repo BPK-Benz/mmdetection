@@ -2,13 +2,80 @@ _base_ = [
     '../_base_/datasets/coco_detection.py', '../_base_/default_runtime.py'
 ]
 
+# 1. dataset settings
+# Modify dataset related settings
 dataset_type = 'CocoDataset'
-classes = ('Infected_cells','Uninfected_cells','Undefined_cells', )
+classes = ('Infected_cells','Uninfected_cells','Divided_cells','Border_cells', )
+
 
 img_scale = (int(1360/4*3), int(1024/4*3))
 # img_scale = (int(1360/2), int(1024/2))
 img_norm_cfg = dict(
     mean=[25.526, 0.386, 52.850], std=[53.347, 9.402, 53.172], to_rgb=True)
+
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(type='LoadAnnotations', with_bbox=True),
+    dict(type='Resize', img_scale=img_scale, keep_ratio=True),
+    dict(type='RandomFlip', flip_ratio=0.5, direction=['horizontal','vertical'] ),
+
+    dict(type='Normalize', **img_norm_cfg),
+    dict(type='Pad', size_divisor=32),
+    dict(type='DefaultFormatBundle'),
+
+    dict(
+        type='Collect',
+        keys=['img', 'gt_bboxes', 'gt_labels'],
+        meta_keys=('filename', 'ori_shape', 'img_shape', 'img_norm_cfg',
+                   'pad_shape', 'scale_factor')),
+
+]
+test_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(
+        type='MultiScaleFlipAug',
+        img_scale=img_scale,
+        flip=False,
+        transforms=[
+            dict(type='Resize', keep_ratio=True),
+            dict(type='RandomFlip'),
+            dict(type='Normalize', **img_norm_cfg),
+            dict(type='Pad', size_divisor=32),
+            dict(type='ImageToTensor', keys=['img']),
+            dict(type='Collect', keys=['img']),
+        ])
+]
+
+base = "/workspace/NAS/Benz_Cell/cellLabel-main/"
+data = dict(
+    samples_per_gpu=1,
+    workers_per_gpu=1,
+    train=dict(
+        type=dataset_type,
+        ann_file= base+'Coco_File/InfectTotal_TrainNuc_April.json',
+        img_prefix= base,
+        classes=classes,
+        pipeline=train_pipeline,
+    ),
+    val=dict(
+        type=dataset_type,
+        ann_file= base+'Coco_File/InfectTotal_TestNuc_April.json',
+        img_prefix= base,
+        classes=classes,
+        pipeline=test_pipeline,
+    ),
+    test=dict(
+        type=dataset_type,
+        ann_file= base+'Coco_File/InfectTotal_TestNuc_April.json',
+        img_prefix= base,
+        classes=classes,
+        pipeline=test_pipeline,
+    )
+)
+
+
+# 2. model settings
+# We also need to change the num_classes in head to match the dataset's annotation
 
 model = dict(
     type='DeformableDETR',
@@ -107,63 +174,7 @@ optimizer_config = dict(grad_clip=dict(max_norm=0.1, norm_type=2))
 # learning policy
 lr_config = dict(policy='step', step=[9, 10, 11])
 
-train_pipeline = [
-    dict(type='LoadImageFromFile'),
-    dict(type='LoadAnnotations', with_bbox=True),
-    dict(type='Resize', img_scale=img_scale, keep_ratio=True),
-    dict(type='RandomFlip', flip_ratio=0.5, direction=['horizontal','vertical'] ),
-    dict(type='Normalize', **img_norm_cfg),
-    dict(type='Pad', size_divisor=32),
-    dict(type='DefaultFormatBundle'),
-    dict(
-        type='Collect',
-        keys=['img', 'gt_bboxes', 'gt_labels'],
-        meta_keys=('filename', 'ori_shape', 'img_shape', 'img_norm_cfg',
-                   'pad_shape', 'scale_factor')),
 
-]
-test_pipeline = [
-    dict(type='LoadImageFromFile'),
-    dict(
-        type='MultiScaleFlipAug',
-        img_scale=img_scale,
-        flip=False,
-        transforms=[
-            dict(type='Resize', keep_ratio=True),
-            dict(type='RandomFlip'),
-            dict(type='Normalize', **img_norm_cfg),
-            dict(type='Pad', size_divisor=32),
-            dict(type='ImageToTensor', keys=['img']),
-            dict(type='Collect', keys=['img']),
-        ])
-]
-
-base = "/workspace/NAS/Benz_Cell/cellLabel-main/"
-data = dict(
-    samples_per_gpu=1,
-    workers_per_gpu=1,
-    train=dict(
-        type=dataset_type,
-        ann_file= base+'Coco_File/InfectTotal_TrainCell.json',
-        img_prefix= base,
-        classes=classes,
-        pipeline=train_pipeline,
-    ),
-    val=dict(
-        type=dataset_type,
-        ann_file= base+'Coco_File/InfectTotal_TestCell.json',
-        img_prefix= base,
-        classes=classes,
-        pipeline=test_pipeline,
-    ),
-    test=dict(
-        type=dataset_type,
-        ann_file= base+'Coco_File/InfectTotal_TestCell.json',
-        img_prefix= base,
-        classes=classes,
-        pipeline=test_pipeline,
-    )
-)
     
 load_from = 'pretrained_models/deformable_detr_r50_16x2_50e_coco_20210419_220030-a12b9512.pth'
 runner = dict(type='EpochBasedRunner', max_epochs=30)

@@ -124,7 +124,7 @@ data = dict(
 # We also need to change the num_classes in head to match the dataset's annotation
 model = dict(
     backbone=dict(
-        depth=101,
+        depth=50,
         init_cfg=dict(type='Pretrained',
                       checkpoint='torchvision://resnet50'
                       )

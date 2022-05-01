@@ -4,7 +4,8 @@ _base_ = '../faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py'
 # 1. dataset settings
 # Modify dataset related settings
 dataset_type = 'CocoDataset'
-classes = ('Infected_cells','Uninfected_cells','Undefined_cells', )
+classes = ('Infected_cells','Uninfected_cells','Divided_cells','Border_cells', )
+
 
 img_scale = (int(1360/4*3), int(1024/4*3))
 # img_scale = (int(1360/2), int(1024/2))
@@ -17,9 +18,11 @@ train_pipeline = [
     dict(type='LoadAnnotations', with_bbox=True),
     dict(type='Resize', img_scale=img_scale, keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5, direction=['horizontal','vertical'] ),
+
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
     dict(type='DefaultFormatBundle'),
+
     dict(
         type='Collect',
         keys=['img', 'gt_bboxes', 'gt_labels'],
@@ -49,21 +52,21 @@ data = dict(
     workers_per_gpu=1,
     train=dict(
         type=dataset_type,
-        ann_file= base+'Coco_File/InfectTotal_TrainCell.json',
+        ann_file= base+'Coco_File/InfectTotal_TrainNuc_April.json',
         img_prefix= base,
         classes=classes,
         pipeline=train_pipeline,
     ),
     val=dict(
         type=dataset_type,
-        ann_file= base+'Coco_File/InfectTotal_TestCell.json',
+        ann_file= base+'Coco_File/InfectTotal_TestNuc_April.json',
         img_prefix= base,
         classes=classes,
         pipeline=test_pipeline,
     ),
     test=dict(
         type=dataset_type,
-        ann_file= base+'Coco_File/InfectTotal_TestCell.json',
+        ann_file= base+'Coco_File/InfectTotal_TestNuc_April.json',
         img_prefix= base,
         classes=classes,
         pipeline=test_pipeline,
@@ -98,4 +101,3 @@ load_from = 'pretrained_models/faster_rcnn_r50_fpn_dconv_c3-c5_1x_coco_20200130-
 
 
 runner = dict(type='EpochBasedRunner', max_epochs=30)
-
