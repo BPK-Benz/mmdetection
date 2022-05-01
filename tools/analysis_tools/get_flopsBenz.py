@@ -60,10 +60,7 @@ def main():
 
     input_shape = (3, h, w)
 
-    print('*******Check args.config,', args.config, '\n')
-
     cfg = Config.fromfile(args.config)
-    print('*******Check cfg,', cfg, '\n')
 
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
@@ -98,8 +95,6 @@ def main():
     
     import pandas as pd
     save_path = 'work_dirs/'+cfg.filename.split('/')[-1][:-3]
-    print('*******Check args.config,', args.config, '\n')
-    print('*******Check cfg,', cfg, '\n')
     print(cfg.filename)
     pd.DataFrame([['Input shape', input_shape],['GFLOPs', flops],['Parameter', params]]).to_csv(save_path+'/GFLOPS.csv')
 

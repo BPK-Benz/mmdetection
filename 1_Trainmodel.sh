@@ -8,7 +8,7 @@
 # python tools/train.py configs/dcn/DCN_r50_InfectNucNo.py
 # python tools/train.py configs/deformable_detr/deformable_detr_r50_InfectNucAug.py
 # python tools/train.py configs/deformable_detr/deformable_detr_r50_InfectNucNo.py
-python tools/train.py configs/faster_rcnn/faster_rcnn_r101_InfectNucAug.py
+# python tools/train.py configs/faster_rcnn/faster_rcnn_r101_InfectNucAug.py
 python tools/train.py configs/faster_rcnn/faster_rcnn_r101_InfectNucNo.py
 python tools/train.py configs/faster_rcnn/faster_rcnn_r50_InfectNucAug.py
 python tools/train.py configs/faster_rcnn/faster_rcnn_r50_InfectNucNo.py
