@@ -121,7 +121,7 @@ optimizer = dict(type='SGD', lr=0.005, momentum=0.9, weight_decay=0.0005)
 # We also need to change the num_classes in head to match the dataset's annotation
 model = dict(
     backbone=dict(
-        depth=101,
+        depth=50,
         init_cfg=dict(type='Pretrained',
                       checkpoint='torchvision://resnet50')),
     bbox_head=dict(
