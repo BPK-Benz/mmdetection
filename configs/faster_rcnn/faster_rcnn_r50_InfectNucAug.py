@@ -144,5 +144,5 @@ model = dict(
 
 
 load_from="pretrained_models/faster_rcnn_r50_fpn_2x_coco_bbox_mAP-0.384_20200504_210434-a5d8aa15.pth"
-runner = dict(type='EpochBasedRunner', max_epochs=3)
+runner = dict(type='EpochBasedRunner', max_epochs=30)
 

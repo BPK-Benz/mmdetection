@@ -2,12 +2,13 @@ import pandas as pd
 import os, glob
 
 train = 0
-test = 0
+test = 
 confusion = 0
-time = 0
-flops = 1
-project = '/workspace/NAS/Benz_mmdetection/work_dirs/*CellNuc*'
-log_path = '/workspace/fast_data_1/frameworks_benz/mmdet_CellDetection_2/work_dirs/*CellNuc*'
+flops = 0
+project = '/workspace/NAS/Benz_mmdetection/work_dirs/*InfectNuc*'
+
+time = 1
+log_path = '/workspace/fast_data_1/frameworks_benz/mmdet_CellDetection_2/work_dirs/*InfectNuc*'
 
 if train == 1:
     nameConfig = []
